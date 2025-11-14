@@ -6,7 +6,7 @@ This is a C++ project that implements a DJ Session Management system with suppor
 ## Project Structure
 ```
 Skeleton/
-├── bin/                    # Compiled executables and configuration files
+├── bin/                    # Compiled executables and configuration files //pepe
 │   └── dj_config.txt      # Configuration file for DJ settings
 ├── include/               # Header files (.h)
 ├── src/                   # Source files (.cpp)
