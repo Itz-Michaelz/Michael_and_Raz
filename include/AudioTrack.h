@@ -40,7 +40,7 @@ public:
      * TODO: Implement destructor
      * HINT: Don't forget to clean up waveform_data!
      */
-    virtual ~AudioTrack();
+    virtual ~AudioTrack(); 
 
     /**
      * TODO: Implement copy constructor

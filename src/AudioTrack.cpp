@@ -86,7 +86,13 @@ AudioTrack::AudioTrack(AudioTrack&& other) noexcept {
     #ifdef DEBUG
     std::cout << "AudioTrack move constructor called for: " << other.title << std::endl;
     #endif
-    // Your code here...
+    title=std::move(other.title); 
+    artists=std::move(other.artists); 
+    duration_seconds=std::move(other.duration_seconds); 
+    bpm=std::move(other.bpm); 
+    waveform_data=other.waveform_data;
+    other.waveform_data=nullptr;
+    waveform_size=other.waveform_size;           
 }
 
 AudioTrack& AudioTrack::operator=(AudioTrack&& other) noexcept {
@@ -95,7 +101,16 @@ AudioTrack& AudioTrack::operator=(AudioTrack&& other) noexcept {
     #ifdef DEBUG
     std::cout << "AudioTrack move assignment called for: " << other.title << std::endl;
     #endif
-    // Your code here...
+    if(this!=&other){
+        title=std::move(other.title);
+        artists=std::move(other.artists); 
+        duration_seconds=std::move(other.duration_seconds);
+        bpm=std::move(other.bpm); 
+        double* temp =waveform_data;
+        waveform_data=other.waveform_data;
+        delete[] temp;
+        waveform_size=other.waveform_size;
+    }
     return *this;
 }
 
