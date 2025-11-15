@@ -21,7 +21,7 @@ struct SessionConfig {
         int duration_seconds;
         int bpm;
         int extra_param1;        // bitrate for MP3, sample_rate for WAV
-        int extra_param2;        // has_tags for MP3, bit_depth for WAV
+        int extra_param2;        // has_tags for MP3, bit_depth for WAV.
         
         TrackInfo() 
             : type(""), 
