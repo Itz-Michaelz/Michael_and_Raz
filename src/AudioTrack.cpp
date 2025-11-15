@@ -35,7 +35,9 @@ AudioTrack::~AudioTrack() {
     #ifdef DEBUG
     std::cout << "AudioTrack destructor called for: " << title << std::endl;
     #endif
-    // Your code here...
+    delete[] waveform_data;
+    waveform_data=nullptr;
+    
 }
 
 AudioTrack::AudioTrack(const AudioTrack& other)
@@ -44,7 +46,17 @@ AudioTrack::AudioTrack(const AudioTrack& other)
     #ifdef DEBUG
     std::cout << "AudioTrack copy constructor called for: " << other.title << std::endl;
     #endif
-    // Your code here...
+    title=other.title;
+    for(std::string art:other.artists){
+        artists.push_back(art); 
+    }
+    duration_seconds=other.duration_seconds;
+    bpm=other.bpm;
+    waveform_data=new double[other.waveform_size];
+    for(size_t i=0; i<other.waveform_size;i++){
+        waveform_data[i]=other.waveform_data[i];
+    }
+    waveform_size=other.waveform_size;
 }
 
 AudioTrack& AudioTrack::operator=(const AudioTrack& other) {
@@ -52,7 +64,20 @@ AudioTrack& AudioTrack::operator=(const AudioTrack& other) {
     #ifdef DEBUG
     std::cout << "AudioTrack copy assignment called for: " << other.title << std::endl;
     #endif
-    // Your code here...
+    if (this == &other) {
+        return *this;
+    }
+    title=other.title;
+    duration_seconds=other.duration_seconds;
+    bpm=other.bpm;
+    artists = other.artists;
+    double* temp =waveform_data;
+    waveform_data=new double[other.waveform_size];
+    for(size_t i=0; i<other.waveform_size;i++){
+        waveform_data[i]=other.waveform_data[i];
+    }
+    delete[] temp;
+    waveform_size=other.waveform_size;
     return *this;
 }
 
