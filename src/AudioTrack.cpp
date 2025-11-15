@@ -40,23 +40,22 @@ AudioTrack::~AudioTrack() {
     
 }
 
-AudioTrack::AudioTrack(const AudioTrack& other)
-{
+AudioTrack::AudioTrack(const AudioTrack& other) :
+    title(other.title),
+    artists(other.artists),
+    duration_seconds(other.duration_seconds),
+    bpm(other.bpm),
+    waveform_data(nullptr),
+    waveform_size(other.waveform_size)
     // TODO: Implement the copy constructor
+    {
     #ifdef DEBUG
     std::cout << "AudioTrack copy constructor called for: " << other.title << std::endl;
     #endif
-    title=other.title;
-    for(std::string art:other.artists){
-        artists.push_back(art); 
-    }
-    duration_seconds=other.duration_seconds;
-    bpm=other.bpm;
     waveform_data=new double[other.waveform_size];
     for(size_t i=0; i<other.waveform_size;i++){
         waveform_data[i]=other.waveform_data[i];
-    }
-    waveform_size=other.waveform_size;
+        }
 }
 
 AudioTrack& AudioTrack::operator=(const AudioTrack& other) {
@@ -109,7 +108,8 @@ AudioTrack& AudioTrack::operator=(AudioTrack&& other) noexcept {
         double* temp =waveform_data;
         waveform_data=other.waveform_data;
         delete[] temp;
-        waveform_size=other.waveform_size;
+        waveform_size=std::move(other.waveform_size);
+        other.waveform_data=nullptr;
     }
     return *this;
 }
