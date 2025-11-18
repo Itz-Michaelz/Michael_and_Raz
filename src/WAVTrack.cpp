@@ -49,7 +49,7 @@ double WAVTrack::get_quality_score() const {
 
 PointerWrapper<AudioTrack> WAVTrack::clone() const {
     WAVTrack* temp= new WAVTrack(*this);
-    temp->sample_rate=sample_rate;
-    temp->bit_depth=bit_depth;
+    temp->sample_rate = sample_rate;
+    temp->bit_depth = bit_depth;
     return PointerWrapper<AudioTrack>(temp); 
 }
