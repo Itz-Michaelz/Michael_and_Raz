@@ -18,7 +18,20 @@ AudioTrack* LRUCache::get(const std::string& track_id) {
  * TODO: Implement the put() method for LRUCache
  */
 bool LRUCache::put(PointerWrapper<AudioTrack> track) {
-    return false; // Placeholder
+    if(!track){
+        return false;
+    }
+    size_t trackExist = findSlot(track->get_title());
+    if(trackExist != max_size){ //we received a legal index
+        slots[trackExist].access(++access_counter);
+        return false;
+    }
+    size_t emptySlot = findEmptySlot();
+    if(emptySlot == max_size){
+        evictLRU();
+        size_t emptySlot = findEmptySlot();
+    }
+    slots[emptySlot].store(track&, access_counter);
 }
 
 bool LRUCache::evictLRU() {
