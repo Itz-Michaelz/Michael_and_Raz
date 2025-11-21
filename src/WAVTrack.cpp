@@ -43,13 +43,16 @@ double WAVTrack::get_quality_score() const {
     if(sample_rate>=96000) base_score+=5;
     if(bit_depth>=16) base_score+=10;
     if(bit_depth>=24) base_score+=5;
-    if (base_score>100) base_score=100; //not necessary since we cant surpass the limit but we're asked to add it :)
+    if (base_score>100) base_score=100; //not necessary since we cant surpass the limit but we're asked to add it 
     return base_score;  
 }
 
 PointerWrapper<AudioTrack> WAVTrack::clone() const {
-    WAVTrack* temp= new WAVTrack(*this);
-    temp->sample_rate = sample_rate;
-    temp->bit_depth = bit_depth;
-    return PointerWrapper<AudioTrack>(temp); 
+    try {
+        WAVTrack* newTrack = new WAVTrack(*this);
+        return PointerWrapper<AudioTrack>(newTrack);
+    }
+    catch (const std::bad_alloc& error) {
+        return PointerWrapper<AudioTrack>(); 
+    }
 }
