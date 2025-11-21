@@ -59,7 +59,7 @@ int MixingEngineService::loadTrackToDeck(const AudioTrack& track) {
     if(auto_sync){
         int bpm_difference = std::abs(decks[active_deck]->get_bpm() - trckPtr->get_bpm());
         if(bpm_difference > bpm_tolerance){
-            sync_bpm(PointerWrapper<AudioTrack>(trckPtr));
+            sync_bpm(clone_track);
         }
     }
     clone_track.release();
