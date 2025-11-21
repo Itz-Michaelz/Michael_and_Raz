@@ -80,18 +80,18 @@ AudioTrack& AudioTrack::operator=(const AudioTrack& other) {
     return *this;
 }
 
-AudioTrack::AudioTrack(AudioTrack&& other) noexcept {
+AudioTrack::AudioTrack(AudioTrack&& other) noexcept :
+    title(std::move(other.title)),
+    artists(std::move(other.artists)), 
+    duration_seconds(std::move(other.duration_seconds)),
+    bpm(std::move(other.bpm)), 
+    waveform_data(other.waveform_data),
+    waveform_size(other.waveform_size)          {
     // TODO: Implement the move constructor
     #ifdef DEBUG
     std::cout << "AudioTrack move constructor called for: " << other.title << std::endl;
     #endif
-    title=std::move(other.title); 
-    artists=std::move(other.artists); 
-    duration_seconds=std::move(other.duration_seconds); 
-    bpm=std::move(other.bpm); 
-    waveform_data=other.waveform_data;
-    other.waveform_data=nullptr;
-    waveform_size=other.waveform_size;           
+    other.waveform_data=nullptr;          
 }
 
 AudioTrack& AudioTrack::operator=(AudioTrack&& other) noexcept {
