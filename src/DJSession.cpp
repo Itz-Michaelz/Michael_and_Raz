@@ -63,8 +63,24 @@ bool DJSession::load_playlist(const std::string& playlist_name)  {
 
  */
 int DJSession::load_track_to_controller(const std::string& track_name) {
-    // Your implementation here
-    return 0; // Placeholder
+    AudioTrack* toFind= library_service.findTrack(track_name);
+    if (!toFind){
+        std::cout <<"[ERROR] Track: " << track_name <<" not found in library" << std::endl;
+        stats.errors++;
+        return 0;
+    }
+    else{
+        std::cout<< "Log: [System] Loading track "<< track_name <<" to controller.." << std::endl;
+        int toLoad = controller_service.loadTrackToCache(*toFind); 
+        if (toLoad==1)
+            stats.cache_hits++;
+        else if (toLoad==0)
+            stats.cache_misses++;
+        else 
+            stats.cache_misses++ , stats.cache_evictions++;
+        return toLoad;
+    }
+
 }
 
 /**
@@ -74,9 +90,33 @@ int DJSession::load_track_to_controller(const std::string& track_name) {
  * @return: Whether track was successfully loaded to a deck
  */
 bool DJSession::load_track_to_mixer_deck(const std::string& track_title) {
-    std::cout << "[System] Delegating track transfer to MixingEngineService for: " << track_title << std::endl;
-    // your implementation here
-    return false; // Placeholder
+    AudioTrack* retrieved = controller_service.getTrackFromCache(track_title);
+    if(!retrieved){
+        std::cout <<" [ERROR] Track: " <<track_title<< " not found in cache" <<std::endl;
+        stats.errors++;
+        return false;
+    }
+    else{
+        int playdeck= mixing_service.loadTrackToDeck(*retrieved);
+        if (playdeck==0){
+            stats.deck_loads_a++ ;
+            stats.transitions++;
+            return true;
+        }
+            
+        else if (playdeck==1){
+            stats.deck_loads_b++;
+            stats.transitions++;
+            return true;
+        }
+        else {
+            stats.errors++;  
+            std::cout <<" [ERROR] Track: " <<track_title<< " failed to load to the deck" <<std::endl;         
+            return false;
+        }
+    }
+
+    
 }
 
 /**
@@ -92,6 +132,41 @@ void DJSession::simulate_dj_performance() {
         std::cerr << "[ERROR] Failed to load configuration. Aborting session." << std::endl;
         return;
     }
+    if (play_all){                                     //AUTO MODE
+        std::vector<std::string> sortedPlaylistNames;
+        for (const auto& iterator:session_config.playlists){
+            sortedPlaylistNames.push_back(iterator.first);
+        }
+        std::sort(sortedPlaylistNames.begin(),sortedPlaylistNames.end());
+        for(std::string name:sortedPlaylistNames){
+            bool added=load_playlist(name);
+            if(!added)
+                std::cout<<" [ERROR] failed to load playlist" << std::endl;
+            else{
+                for(std::string track:track_titles){
+                    std::cout << "\n–- Processing: <track_title> –-" << std::endl;
+                }
+            }
+
+        }
+
+
+
+
+    
+    }
+    else {                                                //INTERACTIVE MODE
+        std::string intercativePlaylist = display_playlist_menu_from_config();
+        bool added=load_playlist(intercativePlaylist);
+        while(!added){
+            std::cout << " [ERROR] playlist loading failed, please try again" << std::endl;
+            intercativePlaylist = display_playlist_menu_from_config();
+            added=load_playlist(intercativePlaylist);
+        }
+            
+            
+    }
+    
     
     // 2. Build track library from config
     library_service.buildLibrary(session_config.library_tracks);
