@@ -132,57 +132,6 @@ void DJSession::simulate_dj_performance() {
         std::cerr << "[ERROR] Failed to load configuration. Aborting session." << std::endl;
         return;
     }
-    if (play_all){                                                             //AUTO MODE
-        std::vector<std::string> sortedPlaylistNames;
-        for (const auto& iterator:session_config.playlists){
-            sortedPlaylistNames.push_back(iterator.first);
-        }
-        std::sort(sortedPlaylistNames.begin(),sortedPlaylistNames.end());
-        for(std::string name:sortedPlaylistNames){
-            bool added=load_playlist(name);
-            if(!added)
-                std::cout<<" [ERROR] failed to load playlist" << std::endl;
-            else{
-                for(std::string track:track_titles){
-                    std::cout << "\n–- Processing: "<< track << "–-" << std::endl;
-                    stats.tracks_processed++;
-                    load_track_to_controller(track);
-                    load_track_to_mixer_deck(track); //iteration will continue either way. 
-                }
-                print_session_summary();
-                stats.tracks_processed = 0,stats.cache_hits = 0,stats.cache_misses = 0,
-                stats.cache_evictions = 0,stats.deck_loads_a = 0,stats.deck_loads_b = 0,
-                stats.transitions = 0,stats.errors = 0;
-            }
-
-        }
-
-    }
-    else {                                                                           //INTERACTIVE MODE
-        std::string interactivePlaylist = display_playlist_menu_from_config();
-        bool added=load_playlist(interactivePlaylist);
-        while(!added){
-            std::cout << " [ERROR] playlist loading failed, please try again" << std::endl;
-            interactivePlaylist = display_playlist_menu_from_config();
-            added=load_playlist(interactivePlaylist);
-        }   
-        for(std::string track:track_titles){
-                std::cout << "\n–- Processing: "<< track << "–-" << std::endl;
-                stats.tracks_processed++;
-                load_track_to_controller(track);
-                load_track_to_mixer_deck(track); 
-            }
-            print_session_summary();
-            stats.tracks_processed = 0,stats.cache_hits = 0,stats.cache_misses = 0,
-            stats.cache_evictions = 0,stats.deck_loads_a = 0,stats.deck_loads_b = 0,
-            stats.transitions = 0,stats.errors = 0;
-        }
-         
-            
-            
-    
-    
-    
     // 2. Build track library from config
     library_service.buildLibrary(session_config.library_tracks);
     
@@ -196,9 +145,66 @@ void DJSession::simulate_dj_performance() {
     std::cout << "Auto Sync: " << (session_config.auto_sync ? "enabled" : "disabled") << std::endl;
     std::cout << "Cache Capacity: " << session_config.controller_cache_size << " slots (LRU policy)" << std::endl;
     std::cout << "\n--- Processing Tracks ---" << std::endl;
-
-    std::cout << "TODO: Implement the DJ performance simulation workflow here." << std::endl;
     // Your implementation here
+    if (play_all){                                                             //AUTO MODE
+        std::vector<std::string> sortedPlaylistNames;
+        for (const auto& iterator:session_config.playlists){
+            sortedPlaylistNames.push_back(iterator.first);
+        }
+        std::sort(sortedPlaylistNames.begin(),sortedPlaylistNames.end());
+        for(const std::string& name:sortedPlaylistNames){
+            bool added=load_playlist(name);
+            if(!added)
+                std::cout<<" [ERROR] failed to load playlist" << std::endl;
+            else{
+                for(const std::string& track:track_titles){
+                    std::cout << "\n–- Processing: "<< track << "–-" << std::endl;
+                    stats.tracks_processed++;
+                    load_track_to_controller(track);
+                    load_track_to_mixer_deck(track); //iteration will continue either way. 
+                }
+                print_session_summary();
+                stats.tracks_processed = 0,stats.cache_hits = 0,stats.cache_misses = 0,
+                stats.cache_evictions = 0,stats.deck_loads_a = 0,stats.deck_loads_b = 0,
+                stats.transitions = 0,stats.errors = 0;
+            }
+
+        }
+        std::cout << " Session cancelled by user or all playlists played." << std::endl;
+
+    }
+    else {                                                                           //INTERACTIVE MODE
+        std::string interactivePlaylist = display_playlist_menu_from_config();
+        if(interactivePlaylist == ""){
+            std::cout << "[CANCEL] Returning..." << std::endl;
+            return;
+        }
+        while(interactivePlaylist != ""){
+            bool added=load_playlist(interactivePlaylist);
+            while(!added){ //This loop is if loading the playlist has resulated in a failure. Will prompt the user again.
+                std::cout << " [ERROR] playlist loading failed, please try again" << std::endl;
+                interactivePlaylist = display_playlist_menu_from_config(); //Prompting user after loading failure.
+                if(interactivePlaylist == ""){
+                    std::cout << "[CANCEL] Returning..." << std::endl;
+                    return;
+                }
+                added=load_playlist(interactivePlaylist);
+            }   
+            for(const std::string& track:track_titles){
+                std::cout << "\n–- Processing: "<< track << "–-" << std::endl;
+                stats.tracks_processed++;
+                load_track_to_controller(track);
+                load_track_to_mixer_deck(track); 
+            }
+
+            print_session_summary();
+            stats.tracks_processed = 0,stats.cache_hits = 0,stats.cache_misses = 0,
+            stats.cache_evictions = 0,stats.deck_loads_a = 0,stats.deck_loads_b = 0,
+            stats.transitions = 0,stats.errors = 0;
+            interactivePlaylist = display_playlist_menu_from_config();
+        }
+        std::cout << " Session cancelled by user or all playlists played." << std::endl;
+    }
 }
 
 
