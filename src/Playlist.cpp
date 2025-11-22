@@ -16,7 +16,6 @@ Playlist::~Playlist() {
     while(current){
         PlaylistNode* toDel=current;
         current=current->next;
-        delete toDel->track;
         delete toDel;
     }
     
