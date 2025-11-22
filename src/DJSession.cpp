@@ -132,7 +132,7 @@ void DJSession::simulate_dj_performance() {
         std::cerr << "[ERROR] Failed to load configuration. Aborting session." << std::endl;
         return;
     }
-    if (play_all){                                     //AUTO MODE
+    if (play_all){                                                             //AUTO MODE
         std::vector<std::string> sortedPlaylistNames;
         for (const auto& iterator:session_config.playlists){
             sortedPlaylistNames.push_back(iterator.first);
@@ -144,28 +144,43 @@ void DJSession::simulate_dj_performance() {
                 std::cout<<" [ERROR] failed to load playlist" << std::endl;
             else{
                 for(std::string track:track_titles){
-                    std::cout << "\n–- Processing: <track_title> –-" << std::endl;
+                    std::cout << "\n–- Processing: "<< track << "–-" << std::endl;
+                    stats.tracks_processed++;
+                    load_track_to_controller(track);
+                    load_track_to_mixer_deck(track); //iteration will continue either way. 
                 }
+                print_session_summary();
+                stats.tracks_processed = 0,stats.cache_hits = 0,stats.cache_misses = 0,
+                stats.cache_evictions = 0,stats.deck_loads_a = 0,stats.deck_loads_b = 0,
+                stats.transitions = 0,stats.errors = 0;
             }
 
         }
 
-
-
-
-    
     }
-    else {                                                //INTERACTIVE MODE
-        std::string intercativePlaylist = display_playlist_menu_from_config();
-        bool added=load_playlist(intercativePlaylist);
+    else {                                                                           //INTERACTIVE MODE
+        std::string interactivePlaylist = display_playlist_menu_from_config();
+        bool added=load_playlist(interactivePlaylist);
         while(!added){
             std::cout << " [ERROR] playlist loading failed, please try again" << std::endl;
-            intercativePlaylist = display_playlist_menu_from_config();
-            added=load_playlist(intercativePlaylist);
+            interactivePlaylist = display_playlist_menu_from_config();
+            added=load_playlist(interactivePlaylist);
+        }   
+        for(std::string track:track_titles){
+                std::cout << "\n–- Processing: "<< track << "–-" << std::endl;
+                stats.tracks_processed++;
+                load_track_to_controller(track);
+                load_track_to_mixer_deck(track); 
+            }
+            print_session_summary();
+            stats.tracks_processed = 0,stats.cache_hits = 0,stats.cache_misses = 0,
+            stats.cache_evictions = 0,stats.deck_loads_a = 0,stats.deck_loads_b = 0,
+            stats.transitions = 0,stats.errors = 0;
         }
+         
             
             
-    }
+    
     
     
     // 2. Build track library from config
