@@ -87,6 +87,11 @@ public:
      * Get all tracks as a vector
      */
     std::vector<AudioTrack*> getTracks() const;
+    
+    /**
+     * Cleans playlist data
+     */
+    void clean(std::string new_name);
 
 };
 

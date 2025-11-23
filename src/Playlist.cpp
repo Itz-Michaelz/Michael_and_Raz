@@ -135,3 +135,15 @@ std::vector<AudioTrack*> Playlist::getTracks() const {
     }
     return tracks;
 }
+
+void Playlist::clean(std::string new_name){
+    PlaylistNode* current = head; //didn't change.
+    while(current){
+        PlaylistNode* toDel=current;
+        current=current->next;
+        delete toDel;
+    }
+    playlist_name = std::move(new_name);
+    track_count = 0;
+    head = 0;
+}
