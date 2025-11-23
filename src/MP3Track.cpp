@@ -53,8 +53,11 @@ double MP3Track::get_quality_score() const {
 }
 
 PointerWrapper<AudioTrack> MP3Track::clone() const {
-    MP3Track* temp= new MP3Track(*this);  //??????   
-    temp->bitrate = bitrate;
-    temp->has_id3_tags = has_id3_tags;
-    return PointerWrapper<AudioTrack>(temp); 
+    try {
+        MP3Track* newTrack = new MP3Track(*this);
+        return PointerWrapper<AudioTrack>(newTrack);
+    }
+    catch (const std::bad_alloc& error) {
+        return PointerWrapper<AudioTrack>(); 
+    }
 }

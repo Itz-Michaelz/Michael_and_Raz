@@ -82,7 +82,8 @@ AudioTrack* DJLibraryService::findTrack(const std::string& track_title) {
 void DJLibraryService::loadPlaylistFromIndices(const std::string& playlist_name, 
                                                const std::vector<int>& track_indices) {
     std::cout << " [INFO] Loading playlist: " << playlist_name << std::endl;
-    Playlist myPlaylist(playlist_name);
+    Playlist tempPlaylist(playlist_name);
+    //std::swap(playlist, tempPlaylist);  //Swapping playlists to make room for new playlist in playlist field.
     int counter = 0; //Counting tracks added
     int size = library.size();
     for(int lib_index : track_indices){
