@@ -20,6 +20,9 @@ struct PlaylistNode {
     PlaylistNode* next;
 
     PlaylistNode(AudioTrack* t) : track(t), next(nullptr) {}
+    PlaylistNode(const PlaylistNode&) = delete;  //implementation of copy constructor is deleted to avoid accidental copies.
+    PlaylistNode& operator=(const PlaylistNode&) = delete; //inplementation of copy assignment is deleted to avoid accidental copies.
+
     ~PlaylistNode(){
         delete track; //node owns audiotrack.
     }
@@ -36,12 +39,14 @@ public:
      * Constructor
      */
     Playlist(const std::string& name="");
-
+    
     /**
      * Destructor
      */
     ~Playlist();
-
+    
+    //Playlist(const Playlist&) = delete; //implementation of copy constructor is deleted to avoid accidental copies.
+    //Playlist& operator=(const Playlist&) = delete; //inplementation of copy assignment is deleted to avoid accidental copies.
     /**
      * Add a track to the playlist
      * @param track Pointer to AudioTrack to add
