@@ -45,8 +45,9 @@ public:
      */
     ~Playlist();
     
-    //Playlist(const Playlist&) = delete; //implementation of copy constructor is deleted to avoid accidental copies.
-    //Playlist& operator=(const Playlist&) = delete; //inplementation of copy assignment is deleted to avoid accidental copies.
+    Playlist(const Playlist& other); //copy constructor
+
+    Playlist& operator=(const Playlist&) = delete; //inplementation of copy assignment is deleted to avoid accidental copies.
     /**
      * Add a track to the playlist
      * @param track Pointer to AudioTrack to add
